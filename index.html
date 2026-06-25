@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrículas de Europa con Juegos</title>
+<style>
+/* =========================
+ESTILOS BASE (MÓVIL)
+========================= */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    color: #111111;
+    padding: 15px;
+    margin: 0;
+    transition: background 0.3s, color 0.3s;
+}
+h2 {
+    text-align: center;
+    color: #111111;
+    font-size: 22px;
+    transition: color 0.3s;
+    margin-top: 30px;
+}
+.matricula-titulo {
+    background: #ffffff;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    max-width: 420px;
+    margin: 40px auto 15px auto;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    overflow: hidden;
+    transition: background 0.3s, border-color 0.3s;
+}
+.matricula-titulo::before {
+    content: "";
+    background: #003399;
+    width: 40px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.matricula-titulo::after {
+    content: "★";
+    color: #ffcc00;
+    font-size: 5px;
+    position: absolute;
+    left: 18px;
+    top: 30px;
+    text-shadow: 
+        0px -15px 0 #ffcc00, 7px -13px 0 #ffcc00, 13px -7px 0 #ffcc00, 15px 0px 0 #ffcc00,
+        13px 7px 0 #ffcc00, 7px 13px 0 #ffcc00, 0px 15px 0 #ffcc00, -7px 13px 0 #ffcc00,
+        -13px 7px 0 #ffcc00, -15px 0px 0 #ffcc00, -13px -7px 0 #ffcc00, -7px -13px 0 #ffcc00;
+    color: transparent;
+}
+.matricula-texto {
+    flex-grow: 1;
+    text-align: center;
+    font-family: 'Arial Black', Impact, sans-serif;
+    font-size: 20px;
+    color: #111111;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-right: 20px;
+    transition: color 0.3s;
+}
+.contenedor-estrellas {
+    position: relative;
+    width: fit-content;
+    margin: 10px auto 5px auto;
+    font-size: 28px;
+    letter-spacing: 4px;
+    line-height: 1;
+    user-select: none;
+}
+.estrellas-fondo { color: #ddd; transition: color 0.3s; }
+.estrellas-relleno {
+    position: absolute;
+    top: 0; left: 0; width: 0%;
+    color: #ffcc00;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 0.3s ease;
+}
+#porcentaje {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #555555;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+/* PESTAÑAS DE FILTRO SÓLIDAS */
+.pestanas-filtro {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    max-width: 400px;
+    margin: 15px auto;
+    padding: 0 10px;
+}
+.btn-pestana {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #111111;
+    background: #ffffff;
+    color: #111111;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-pestana.activo {
+    background: #111111;
+    color: #ffffff;
+}
+#buscar {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 90%;
+    max-width: 320px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #ffffff;
+    color: #111111;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+/* PANEL DE LOGROS INTERACTIVO */
+.contenedor-logros {
+    max-width: 600px;
+    margin: 20px auto;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    display: flex;
+    justify-content: space-around;
+    transition: background 0.3s;
+}
+.logro {
+    text-align: center;
+    opacity: 1;
+    filter: grayscale(100%);
+    transition: filter 0.5s ease, transform 0.3s;
+    font-size: 28px;
+    position: relative;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 8px;
+}
+.logro:active { transform: scale(0.9); }
+.logro.desbloqueado {
+    filter: grayscale(0%);
+    animation: pulsoJuego 2s infinite alternate;
+}
+@keyframes pulsoJuego {
+    0% { box-shadow: 0 0 0px rgba(255,204,0,0); }
+    100% { box-shadow: 0 0 8px rgba(255,204,0,0.6); }
+}
+.logro .tooltip {
+    visibility: hidden;
+    width: 130px;
+    background-color: #111111;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 6px;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    line-height: 1.3;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.logro:hover .tooltip { visibility: visible; }
+/* =========================
+SISTEMA DE MODALES DE JUEGO
+========================= */
+.modal-juego {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5000; display: none;
+}
+.modal-juego.activo { display: flex; }
+.contenido-juego {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    width: 95%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    color: #111111;
+}
+.btn-accion-juego {
+    background: #111111; color: #fff; border: none; padding: 12px 25px;
+    font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px;
+}
+.btn-cerrar-juego {
+    background: #ff3b3b; color: white; border: none; padding: 8px 16px;
+    border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 15px;
+}
+/* EFECTO DE DESTELLO FLASH (CÁMARA) */
+.flash-pantalla {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #ffffff; z-index: 9999; pointer-events: none; opacity: 0;
+}
+.flash-pantalla.disparar { animation: flashAnim 0.4s ease-out; }
+@keyframes flashAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
+#lista, #otros {
+    display: grid; grid-template-columns: 1fr; gap: 10px;
+    max-width: 1400px; margin: 0 auto; padding: 10px;
+}
+.pais {
+    background: #ffffff; padding: 12px; border-radius: 10px;
+    user-select: none; box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    box-sizing: border-box; transition: background 0.2s, box-shadow 0.3s, color 0.3s;
+}
+.pais-cabecera {
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    color: #111111; font-size: 16px; transition: color 0.3s;
+    width: 100%;
+}
+/* CONTENEDOR DE BANDERA REFORZADO */
+.contenedor-bandera-segura {
+    width: 38px; height: 25px; display: flex; align-items: center;
+    justify-content: center; font-size: 20px; line-height: 1; flex-shrink: 0;
+}
+.img-bandera {
+    width: 100%; height: 100%; object-fit: fill; border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2); border: 1px solid #eaeaea;
+}
+.pais-nombre { flex-grow: 1; display: flex; align-items: center; gap: 6px; }
+.marcado .pais-nombre { text-decoration: line-through; }
+.pais.marcado { background: #90ee90; }
+.btn-foto {
+    background: #e0e0e0; border: none; border-radius: 6px;
+    width: 34px; height: 34px; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0; transition: background 0.3s;
+}
+.btn-foto img { width: 100%; height: 100%; object-fit: cover; }
+/* RECUADRO ROJO DE LA BASURA */
+.borrar {
+    width: 34px; height: 34px; background: #ff3b3b; color: white;
+    border: none; border-radius: 6px; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 14px;
+    margin-left: 5px; box-shadow: 0 2px 4px rgba(255,59,59,0.3);
+}
+.centro { text-align: center; margin: 20px 0; padding: 0 10px; }
+input[type="text"] {
+    padding: 10px; width: 100%; max-width: 240px; border-radius: 6px;
+    border: 1px solid #ccc; background: #ffffff; color: #111111;
+    font-size: 14px; box-sizing: border-box; transition: background 0.3s, color 0.3s;
+}
+.btn-anadir {
+    padding: 10px 15px; cursor: pointer; background: #1e90ff; color: white;
+    border: none; border-radius: 6px; margin-top: 8px; font-size: 14px;
+}
+@media (min-width: 450px) { .btn-anadir { margin-top: 0; margin-left: 5px; } }
+/* MODO OSCURO */
+.btn-darkmode {
+    position: absolute; top: 15px; right: 15px; background: #ffffff;
+    color: #111111; border: 2px solid #111111; border-radius: 50%;
+    width: 40px; height: 40px; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; z-index: 100;
+}
+body.dark-mode { background: #121212; color: #e0e0e0; }
+body.dark-mode h2 { color: #ffffff; }
+body.dark-mode .matricula-titulo { background: #ffffff; border-color: #111111; }
+body.dark-mode .matricula-texto { color: #111111; }
+body.dark-mode #buscar, body.dark-mode input[type="text"] { background: #1e1e1e; color: #ffffff; border-color: #444444; }
+body.dark-mode .pais { background: #1e1e1e; }
+body.dark-mode .pais-cabecera { color: #ffffff; }
+body.dark-mode .pais.marcado { background: #1b4d22; }
+body.dark-mode .contenedor-logros { background: #1e1e1e; }
+body.dark-mode .btn-pestana { background: #1e1e1e; color: #ffffff; border-color: #ffffff; }
+body.dark-mode .btn-pestana.activo { background: #ffffff; color: #111111; }
+body.dark-mode .contenido-juego { background: #1e1e1e; color: #ffffff; border: 2px solid #444; }
+body.dark-mode .btn-trivia { background: #333; color: white; border-color: #555; }
+/* MODALES */
+.alerta-error {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background-color: #ff3b3b; color: white; padding: 20px 30px;
+    border-radius: 12px; font-size: 20px; font-weight: bold; z-index: 2000;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.alerta-error.visible { opacity: 1; }
+.notificacion-logro {
+    position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+    background: #1e1e1e; color: #ffffff; padding: 12px 24px; border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: flex; align-items: center;
+    gap: 12px; z-index: 3000; font-weight: bold; transition: bottom 0.4s; border: 2px solid #ffcc00;
+}
+.notificacion-logro.mostrar { bottom: 25px; }
+@media (min-width: 650px) { #lista, #otros { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+@media (min-width: 1025px) { #lista, #otros { grid-template-columns: repeat(3, 1fr); gap: 28px; } }
+.modal-foto {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000000; display: flex; align-items: center; justify-content: center;
+    z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal-foto.activo { opacity: 1; pointer-events: auto; }
+.modal-contenido { background: #ffffff; padding: 20px; border-radius: 12px; text-align: center; max-width: 90%; }
+.modal-img { max-width: 100%; max-height: 55vh; border-radius: 6px; }
+.oculto { display: none !important; }
+/* Entorno común de Canvas y Controles para los juegos 3D */
+.canvas-juego {
+    background: #000;
+    border: 3px solid #111111;
+    border-radius: 8px;
+    display: block;
+    margin: 10px auto;
+}
+.controles-movil-juego {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 10px 0;
+}
+.btn-control-juego {
+    background: #1e90ff;
+    color: white;
+    border: 2px solid #111111;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+}
+.btn-control-juego:active { background: #0066cc; }
+.btn-fuego-juego { background: #ff3b3b; }
+.btn-fuego-juego:active { background: #cc1111; }
+.btn-fuego-juego.cooldown { background: #777777 !important; cursor: not-allowed; opacity: 0.6; }
+.scoreboard-juego {
+    background: #f0f0f0;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-around;
+}
+body.dark-mode .scoreboard-juego { background: #2a2a2a; border-color: #444; }
+</style>
+</head>
+<body>
+<div id="destelloFlash" class="flash-pantalla"></div>
+<button class="btn-darkmode" id="btnDarkMode" onclick="toggleDarkMode()">🌙</button>
+<div id="alertaError" class="alerta-error">Este país ya está puesto</div>
+<div class="matricula-titulo">
+    <div class="matricula-texto">Matrículas de Europa</div>
+</div>
+<div class="contenedor-estrellas">
+    <div class="estrellas-fondo">★★★★★★★★★★</div>
+    <div id="estrellasRelleno" class="estrellas-relleno">★★★★★★★★★★</div>
+</div>
+<div id="porcentaje">0%</div>
+<div class="contenedor-logros">
+    <div class="logro" id="logro-primero" onclick="abrirMinijuego('primero')">🎯<span class="tooltip"><b>Juego: Tiro con Arco 3D</b><br>(Bloqueado hasta marcar 1 país)</span></div>
+    <div class="logro" id="logro-cinco" onclick="abrirMinijuego('cinco')">🚗<span class="tooltip"><b>Juego: Simulador de Ruta</b><br>(Bloqueado hasta marcar 5 países)</span></div>
+    <div class="logro" id="logro-foto" onclick="abrirMinijuego('foto')">📸<span class="tooltip"><b>Juego: Revelado Flash</b><br>(Bloqueado hasta subir 1 foto)</span></div>
+    <div class="logro" id="logro-mitad" onclick="abrirMinijuego('mitad')">👑<span class="tooltip"><b>Juego: Trivia de Banderas</b><br>(Bloqueado hasta llegar al 100%)</span></div>
+</div>
+<div class="pestanas-filtro">
+    <button class="btn-pestana activo" id="pestana-todos" onclick="cambiarFiltroPestana('todos')">Todos</button>
+    <button class="btn-pestana" id="pestana-pendientes" onclick="cambiarFiltroPestana('pendientes')">Pendientes</button>
+    <button class="btn-pestana" id="pestana-completados" onclick="cambiarFiltroPestana('completados')">Completados</button>
+</div>
+<input id="buscar" placeholder="Buscar país..." oninput="filtrar()">
+<div id="lista"></div>
+<div class="centro">
+    <h2>Añadir Cualquier País de Europa:</h2>
+    <input type="text" id="nuevoPais" placeholder="Ej: Colombia, Venezuela, Egipto...">
+    <button class="btn-anadir" onclick="agregarPais()">Añadir</button>
+</div>
+<div class="seccion">
+    <h2>Matrículas de otros continentes</h2>
+    <div id="otros"></div>
+</div>
+<div id="modalJuego" class="modal-juego">
+    <div class="contenido-juego">
+        <h3 id="tituloJuego">Título del Juego</h3>
+        <p id="descripcionJuego">Instrucciones...</p>
+        <div id="escenarioJuego"></div>
+        <button id="btnPrincipalJuego" class="btn-accion-juego" onclick="ejecutarAccionJuego()">¡Jugar!</button>
+        <br>
+        <button class="btn-cerrar-juego" onclick="cerrarMinijuego()">Salir del juego</button>
+    </div>
+</div>
+<div id="notificacionLogro" class="notificacion-logro">
+    <span style="font-size:24px;">🏆</span>
+    <div>
+        <div style="font-size:11px; color:#aaa;">¡LOGRO DESBLOQUEADO!</div>
+        <div id="textoLogro" style="font-size:14px;">Nombre del logro</div>
+    </div>
+</div>
+<div id="modalVisualizador" class="modal-foto" onclick="cerrarModal()">
+    <div class="modal-contenido" onclick="event.stopPropagation()">
+        <img id="modalImagen" class="modal-img" src="">
+        <br>
+        <button style="background:#ff3b3b; color:white; border:none; padding:10px; margin-top:10px; border-radius:5px; cursor:pointer;" id="btnBorrarFotoModal">Eliminar</button>
+        <button style="background:#444; color:white; border:none; padding:10px; margin-left:10px; border-radius:5px; cursor:pointer;" onclick="cerrarModal()">Cerrar</button>
+    </div>
+</div>
+<input type="file" id="inputArchivoGlobal" accept="image/*" class="oculto">
+<script>
+let marcados = [];
+let custom = [];
+let fotos = {};
+let logrosDesbloqueados = [];
+let filtroPestanaActual = 'todos';
+let paisSeleccionadoParaFoto = "";
+// Estados de juego globales
+let juegoActual = "";
+let loopJuego = null;
+let enfoqueFoto = 0;
+// Variables globales del COCHE (Simulación Pseudo-3D Arcade)
+let jugadorX3D = 0; 
+let lineaPosicion3D = 0;
+let enemigos3D = [];
+let puntuacionCoche = 0;
+let recordCoche = 0;
+let juegoCocheTerminado = false;
+// Variables globales de la DIANA 3D con Flechas
+let jugadorDianaX = 0; 
+let diana3DX = 0;     
+let dianaDireccion = 1;
+let flechas3D = [];   
+let puntuacionDiana = 0;
+let recordDiana = 0;
+let dianaCooldownActivo = false; // Bloqueo de disparo continuo
+const TIEMPO_RECARGA_ARCO = 1000; // 1 Segundo de cooldown
+const isoPaises = {
+    "afganistan":"af","albania":"al","alemania":"de","andorra":"ad","angola":"ao","antigua y barbuda":"ag","arabia saudita":"sa","argelia":"dz","argentina":"ar","armenia":"am","australia":"au","austria":"at","azerbaiyan":"az",
+    "bahamas":"bs","bangladesh":"bd","barbados":"bb","barein":"bh","belgica":"be","belice":"bz","benin":"bj","bielorrusia":"by","bolivia":"bo","bosnia y herzegovina":"ba","botsuana":"bw","brasil":"br","brunei":"bn","bulgaria":"bg","burkina faso":"bf","burundi":"bi","butan":"bt",
+    "cabo verde":"cv","camboya":"kh","camerun":"cm","canada":"ca","catar":"qa","chad":"td","chile":"cl","china":"cn","chipre":"cy","colombia":"co","comoras":"km","corea del norte":"kp","corea del sur":"kr","costa de marfil":"ci","costa rica":"cr","croacia":"hr","cuba":"cu",
+    "dinamarca":"dk","dominica":"dm",
+    "ecuador":"ec","egipto":"eg","el salvador":"sv","emiratos arabes unidos":"ae","eritrea":"er","eslovaquia":"sk","eslovenia":"si","espana":"es","estados unidos":"us","usa":"us","estonia":"ee","etiopia":"et",
+    "filipinas":"ph","finlandia":"fi","fiyi":"fj","francia":"fr",
+    "gabon":"ga","gambia":"gm","georgia":"ge","ghana":"gh","granada":"gd","grecia":"gr","guatemala":"gt","guyana":"gy","guinea":"gn","guinea ecuatorial":"gq",
+    "haiti":"ht","honduras":"hn","hungria":"hu",
+    "india":"in","indonesia":"id","iraq":"iq","iran":"ir","irlanda":"ie","islandia":"is","israel":"il","italia":"it",
+    "jamaica":"jm","japon":"jp","jordania":"jo",
+    "kazajistan":"kz","kenia":"ke","kirguistan":"kg","kiribati":"ki","kosovo":"xk","kuwait":"kw",
+    "laos":"la","lesoto":"ls","letonia":"lv","libano":"lb","liberia":"lr","libia":"ly","liechtenstein":"li","lituania":"lt","luxemburgo":"lu",
+    "macedonia del norte":"mk","macedonia":"mk","madagascar":"mg","malasia":"my","malaui":"mw","maldivas":"mv","mali":"ml","malta":"mt","marruecos":"ma","mauricio":"mu","mauritania":"mr","mexico":"mx","micronesia":"fm","moldavia":"md","monaco":"mc","mongolia":"mn","montenegro":"me","mozambique":"mz",
+    "namibia":"na","nauru":"nr","nepal":"np","nicaragua":"ni","niger":"ne","nigeria":"ng","noruega":"no","nueva zelanda":"nz",
+    "oman":"om",
+    "paises bajos":"nl","holanda":"nl","pakistan":"pk","palaos":"pw","palestina":"ps","panama":"pa","papua nueva guinea":"pg","paraguay":"py","peru":"pe","polonia":"pl","portugal":"pt",
+    "reino unido":"gb","uk":"gb","republica centroafricana":"cf","republica checa":"cz","republica del congo":"cg","republica democratica del congo":"cd","republica dominicana":"do","ruanda":"rw","rumania":"ro","rusia":"ru",
+    "samoa":"ws","san cristobal y niéves":"kn","san marino":"sm","san vicente y las granadinas":"vc","santa lucia":"lc","santo tome y principe":"st","senegal":"sn","serbia":"rs","seychelles":"sc","sierra leona":"sl","singapur":"sg","siria":"sy","somalia":"so","sri lanka":"lk","sudafrica":"za","sudan":"sd","suecia":"se","suiza":"ch","surinam":"sr","suazilandia":"sz",
+    "tailandia":"th","taiwan":"tw","tanzania":"tz","tayikistan":"tj","timor oriental":"tl","togo":"tg","tonga":"to","trinidad y tobago":"tt","tunez":"tn","turkmenistan":"tm","turquia":"tr","tuvalu":"tv",
+    "ucrania":"ua","uganda":"ug","uruguay":"uy","uzbekistan":"uz",
+    "vanuatu":"vu","venezuela":"ve","vietnam":"vn",
+    "yemen":"ye","yibuti":"dj",
+    "zambia":"zm","zimbabue":"zw"
+};
+const emojisBanderas = {
+    "colombia":"🇨🇴","venezuela":"🇻🇪","egipto":"🇪🇬","espana":"🇪🇸","mexico":"🇲🇽","argentina":"🇦🇷","peru":"🇵🇪","chile":"🇨🇱",
+    "francia":"🇫🇷","alemania":"🇩🇪","italia":"🇮🇹","reino unido":"🇬🇧","japon":"🇯🇵","china":"🇨🇳","estados unidos":"🇺🇸","usa":"🇺🇸"
+};
+function cargarDatos(){
+    try {
+        marcados = JSON.parse(localStorage.getItem("marcados") || "[]");
+        custom = JSON.parse(localStorage.getItem("custom") || "[]");
+        fotos = JSON.parse(localStorage.getItem("fotos") || "{}");
+        logrosDesbloqueados = JSON.parse(localStorage.getItem("logros") || "[]");
+        recordCoche = parseInt(localStorage.getItem("recordCoche") || "0");
+        recordDiana = parseInt(localStorage.getItem("recordDiana") || "0");
+        if(localStorage.getItem("darkmode") === "true"){
+            document.body.classList.add("dark-mode");
+            document.getElementById("btnDarkMode").textContent = "☀️";
+        }
+    } catch(e) {}
+}
+function guardar(){
+    try {
+        localStorage.setItem("marcados", JSON.stringify(marcados));
+        localStorage.setItem("custom", JSON.stringify(custom));
+        localStorage.setItem("fotos", JSON.stringify(fotos));
+        localStorage.setItem("logros", JSON.stringify(logrosDesbloqueados));
+        localStorage.setItem("recordCoche", recordCoche.toString());
+        localStorage.setItem("recordDiana", recordDiana.toString());
+    } catch(e) {}
+}
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    const activo = document.body.classList.contains("dark-mode");
+    document.getElementById("btnDarkMode").textContent = activo ? "☀️" : "🌙";
+    localStorage.setItem("darkmode", activo ? "true" : "false");
+}
+function crearContenedorBandera(nombre) {
+    const limpio = nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+    const code = isoPaises[limpio === "espana" ? "espana" : limpio];
+    if (!code) return `<div class="contenedor-bandera-segura">🏳️</div>`;
+    const emojiFallback = emojisBanderas[limpio] || "🏳️";
+    return `
+        <div class="contenedor-bandera-segura">
+            <img class="img-bandera" src="https://flagcdn.com/w160/${code}.png" onerror="this.style.display='none'; this.parentElement.innerHTML='${emojiFallback}';">
+        </div>
+    `;
+}
+const europa = [
+    "albania","alemania","andorra","armenia","austria","azerbaiyan","belgica","bielorrusia",
+    "bosnia y herzegovina","bulgaria","chipre","croacia","dinamarca","eslovaquia","eslovenia",
+    "espana","estonia","finlandia","francia","georgia","grecia","hungria","irlanda","islandia",
+    "italia","kazajistan","kosovo","letonia","liechtenstein","lituania","luxemburgo","malta",
+    "moldavia","monaco","montenegro","noruega","paises bajos","polonia","portugal","reino unido",
+    "republica checa","macedonia del norte","rumania","rusia","san marino","serbia","suecia","suiza","turquia","ucrania"
+];
+function cambiarFiltroPestana(tipo) {
+    filtroPestanaActual = tipo;
+    document.querySelectorAll('.btn-pestana').forEach(btn => btn.classList.remove('activo'));
+    document.getElementById(`pestana-${tipo}`).classList.add('activo');
+    filtrar();
+}
+function crearPais(nombre, contenedor, esCustom=false){
+    const div = document.createElement("div");
+    div.className = "pais";
+    if(marcados.includes(nombre)) div.classList.add("marcado");
+    let nombreCapitalizado = nombre.split(' ').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+    if(nombre.toLowerCase() === "espana") nombreCapitalizado = "España";
+    const contenidoBotonFoto = fotos[nombre] ? `<img src="${fotos[nombre]}">` : '📷';
+    div.innerHTML = `
+        <div class="pais-cabecera">
+            ${crearContenedorBandera(nombre)}
+            <span class="pais-nombre">${nombreCapitalizado}</span>
+            <button class="btn-foto">${contenidoBotonFoto}</button>
+        </div>
+    `;
+    const cabecera = div.querySelector(".pais-cabecera");
+    const btnFoto = div.querySelector(".btn-foto");
+    cabecera.onclick = (e) => {
+        if(e.target.closest(".btn-foto") || e.target.closest(".borrar")) return; 
+        div.classList.toggle("marcado");
+        if(div.classList.contains("marcado")){
+            if(!marcados.includes(nombre)) marcados.push(nombre);
+        } else {
+            marcados = marcados.filter(p => p !== nombre);
+        }
+        guardar(); actualizarBarra(); verificarLogros(); filtrar();
+    };
+    btnFoto.onclick = () => {
+        paisSeleccionadoParaFoto = nombre;
+        if(fotos[nombre]) abrirModal(fotos[nombre]);
+        else document.getElementById("inputArchivoGlobal").click();
+    };
+    if(esCustom){
+        let timerGlobal;
+        const iniciarPresion = () => { timerGlobal = setTimeout(() => mostrarBorrar(cabecera, nombre), 500); };
+        const cancelarPresion = () => { clearTimeout(timerGlobal); };
+        cabecera.addEventListener("mousedown", iniciarPresion);
+        cabecera.addEventListener("touchstart", iniciarPresion, {passive: true});
+        cabecera.addEventListener("mouseup", cancelarPresion);
+        cabecera.addEventListener("mouseleave", cancelarPresion);
+        cabecera.addEventListener("touchend", cancelarPresion);
+    }
+    contenedor.appendChild(div);
+}
+function mostrarBorrar(cabecera, nombre){
+    if(cabecera.querySelector(".borrar")) return;
+    const btn = document.createElement("button");
+    btn.innerHTML = "🗑️"; btn.className = "borrar";
+    btn.onclick = (e) => {
+        e.stopPropagation();
+        custom = custom.filter(p => p !== nombre);
+        marcados = marcados.filter(p => p !== nombre);
+        delete fotos[nombre]; guardar(); render();
+    };
+    cabecera.appendChild(btn);
+}
+function abrirModal(src){
+    document.getElementById("modalImagen").src = src;
+    document.getElementById("modalVisualizador").classList.add("activo");
+}
+function cerrarModal(){ document.getElementById("modalVisualizador").classList.remove("activo"); }
+document.getElementById("btnBorrarFotoModal").onclick = () => {
+    if(paisSeleccionadoParaFoto){ delete fotos[paisSeleccionadoParaFoto]; guardar(); cerrarModal(); render(); }
+};
+document.getElementById("inputArchivoGlobal").onchange = (e) => {
+    const archivo = e.target.files[0];
+    if (!archivo) return;
+    const lector = new FileReader();
+    lector.onload = (evento) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = 400; canvas.height = 300;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, 400, 300);
+            fotos[paisSeleccionadoParaFoto] = canvas.toDataURL("image/jpeg", 0.6);
+            guardar(); verificarLogros(); render();
+        };
+        img.src = evento.target.result;
+    };
+    lector.readAsDataURL(archivo);
+};
+function verificarLogros() {
+    const lanzarAlertaLogro = (id, texto) => {
+        if (!logrosDesbloqueados.includes(id)) {
+            logrosDesbloqueados.push(id); guardar();
+            if (id === "foto") { const flash = document.getElementById("destelloFlash"); flash.classList.add("disparar"); setTimeout(() => flash.classList.remove("disparar"), 400); }
+            document.getElementById("textoLogro").textContent = texto;
+            const pop = document.getElementById("notificacionLogro");
+            pop.classList.add("mostrar"); setTimeout(() => pop.classList.remove("mostrar"), 4000);
+        }
+    };
+    if (marcados.length >= 1) lanzarAlertaLogro("primero", "🎯 Tiro con Arco 3D Desbloqueado");
+    if (marcados.length >= 5) lanzarAlertaLogro("cinco", "🚗 Simulador de Ruta Desbloqueado");
+    if (Object.keys(fotos).length >= 1) lanzarAlertaLogro("foto", "📸 Revelado Flash Desbloqueado");
+    if (marcados.length >= 50) lanzarAlertaLogro("mitad", "👑 Trivia Mundial Desbloqueada");
+    actualizarPanelLogros();
+}
+function actualizarPanelLogros() {
+    logrosDesbloqueados.forEach(id => {
+        const el = document.getElementById(`logro-${id}`);
+        if(el) {
+            el.classList.add("desbloqueado");
+            const t = el.querySelector(".tooltip");
+            if(t) t.innerHTML = `<b>¡MINIJUEGO ACTIVO!</b><br>Haz clic para jugar en tiempo real.`;
+        }
+    });
+}
+function actualizarBarra(){
+    const done = marcados.length;
+    const percent = Math.min(done * 2, 100);
+    document.getElementById("porcentaje").textContent = percent + "%";
+    document.getElementById("estrellasRelleno").style.width = percent + "%";
+}
+/* ESCUCHADOR DE TECLADO GLOBAL */
+window.addEventListener("keydown", function(e) {
+    if (juegoActual === "cinco" && !juegoCocheTerminado) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); moverCocheIzquierda(); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); moverCocheDerecha(); }
+    }
+    else if (juegoActual === "primero") {
+        if (e.key === "ArrowLeft") { e.preventDefault(); moverDianaIzquierda(); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); moverDianaDerecha(); }
+        else if (e.key === " ") { e.preventDefault(); dispararFlechaDiana(); }
+    }
+});
+// Movimientos de los mandos
+function moverCocheIzquierda() { if (jugadorX3D > -0.7) jugadorX3D -= 0.15; }
+function moverCocheDerecha() { if (jugadorX3D < 0.7) jugadorX3D += 0.15; }
+function moverDianaIzquierda() { if (jugadorDianaX > -0.8) jugadorDianaX -= 0.1; }
+function moverDianaDerecha() { if (jugadorDianaX < 0.8) jugadorDianaX += 0.1; }
+function dispararFlechaDiana() {
+    if (dianaCooldownActivo) return; // No permitir disparar si está recargando
+    
+    if (flechas3D.filter(f => !f.clavada).length < 3) {
+        flechas3D.push({ x: jugadorDianaX, z: 0, clavada: false, leDioADiana: false, ox: 0, oy: 0, xFija: 0, yFija: 0 });
+        
+        // Activar Cooldown
+        dianaCooldownActivo = true;
+        const btnFuego = document.getElementById("btnDispararArco");
+        if (btnFuego) {
+            btnFuego.classList.add("cooldown");
+            btnFuego.textContent = "⌛ RECARGANDO...";
+        }
+        
+        setTimeout(() => {
+            dianaCooldownActivo = false;
+            if (btnFuego) {
+                btnFuego.classList.remove("cooldown");
+                btnFuego.textContent = "🏹 DISPARAR";
+            }
+        }, TIEMPO_RECARGA_ARCO);
+    }
+}
+/* SISTEMA CENTRAL DE MINIJUEGOS */
+function abrirMinijuego(id) {
+    if (!logrosDesbloqueados.includes(id)) return;
+    juegoActual = id;
+    const modal = document.getElementById("modalJuego");
+    const titulo = document.getElementById("tituloJuego");
+    const desc = document.getElementById("descripcionJuego");
+    const escenario = document.getElementById("escenarioJuego");
+    const btn = document.getElementById("btnPrincipalJuego");
+    
+    clearInterval(loopJuego);
+    modal.classList.add("activo");
+    escenario.innerHTML = "";
+    btn.style.display = "inline-block";
+    
+    if (id === "primero") {
+        titulo.textContent = "🎯 Campo de Tiro con Arco 3D";
+        desc.textContent = "Apunta con las flechas (←/→) y lanza flechas con Espacio o el botón central.";
+        
+        escenario.innerHTML = `
+            <div class="scoreboard-juego">
+                <div>Puntos: <span id="scoreActualDiana">0</span></div>
+                <div>Récord: <span id="recordActualDiana">${recordDiana}</span></div>
+            </div>
+            <canvas id="canvasDiana3D" class="canvas-juego" width="320" height="280"></canvas>
+            <div class="controles-movil-juego">
+                <button class="btn-control-juego" onclick="moverDianaIzquierda()">◀ Apuntar</button>
+                <button id="btnDispararArco" class="btn-control-juego btn-fuego-juego" onclick="dispararFlechaDiana()">🏹 DISPARAR</button>
+                <button class="btn-control-juego" onclick="moverDianaDerecha()">Apuntar ▶</button>
+            </div>
+        `;
+        btn.style.display = "none";
+        
+        jugadorDianaX = 0;
+        diana3DX = 0;
+        dianaDireccion = 1;
+        flechas3D = [];
+        puntuacionDiana = 0;
+        dianaCooldownActivo = false;
+        
+        const canvas = document.getElementById("canvasDiana3D");
+        loopJuego = setInterval(() => { bucleJuegoDiana3D(canvas); }, 1000 / 30);
+    } 
+    else if (id === "cinco") {
+        titulo.textContent = "🚗 Simulador Arcade Road 3D";
+        desc.textContent = "¡Evita salirte de las líneas blancas! Esquiva los modelos 3D rivales con (←/→).";
+        
+        escenario.innerHTML = `
+            <div class="scoreboard-juego">
+                <div>Puntos: <span id="scoreActualCoche">0</span></div>
+                <div>Récord: <span id="recordActualCoche">${recordCoche}</span></div>
+            </div>
+            <canvas id="canvasCarretera" class="canvas-juego" width="320" height="280"></canvas>
+            <div class="controles-movil-juego">
+                <button class="btn-control-juego" onclick="moverCocheIzquierda()">◀ Izq</button>
+                <button class="btn-control-juego" onclick="moverCocheDerecha()">Der ▶</button>
+            </div>
+        `;
+        btn.style.display = "none";
+        
+        jugadorX3D = 0; lineaPosicion3D = 0; enemigos3D = []; puntuacionCoche = 0; juegoCocheTerminado = false;
+        const canvas = document.getElementById("canvasCarretera");
+        loopJuego = setInterval(() => { bucleJuegoCoche3D(canvas, desc); }, 1000 / 30);
+    }
+    else if (id === "foto") {
+        titulo.textContent = "📸 Revelado Rápido";
+        desc.textContent = "La lente está borrosa. Pulsa el disparador para enfocar de golpe.";
+        escenario.innerHTML = `<div style="font-size:50px; filter:blur(10px); transition:filter 0.2s;" id="fotoBorrosa">🏞️📸🚗</div>`;
+        btn.textContent = "⚡ ENFOCAR";
+        enfoqueFoto = 10;
+    }
+    else if (id === "mitad") {
+        titulo.textContent = "👑 Trivia del Conductor Mundial";
+        desc.textContent = "¿Qué país de Sudamérica tiene el código ISO 'CO'?";
+        escenario.innerHTML = `
+            <div class="opciones-trivia">
+                <button class="btn-trivia" onclick="responderTrivia(false)">Chile</button>
+                <button class="btn-trivia" onclick="responderTrivia(true)">Colombia</button>
+                <button class="btn-trivia" onclick="responderTrivia(false)">Ecuador</button>
+            </div>
+        `;
+        btn.style.display = "none";
+    }
+}
+// MOTOR DE RENDIMIENTO GRÁFICO 3D: TIRO CON ARCO
+function bucleJuegoDiana3D(canvas) {
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width;
+    const H = canvas.height;
+    const horizonteY = 110;
+    
+    ctx.clearRect(0,0,W,H);
+    
+    // Cielo y pradera base
+    ctx.fillStyle = "#2c3e50"; ctx.fillRect(0, 0, W, horizonteY);
+    ctx.fillStyle = "#218c74"; ctx.fillRect(0, horizonteY, W, H - horizonteY);
+    
+    // Dibujar foso poligonal en perspectiva 3D (Fondo donde chocan las flechas)
+    ctx.fillStyle = "#333232";
+    ctx.beginPath();
+    ctx.moveTo(W*0.2, horizonteY);
+    ctx.lineTo(W*0.8, horizonteY);
+    ctx.lineTo(W*0.95, H-40);
+    ctx.lineTo(W*0.05, H-40);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Mover la diana 3D lateralmente en el foso
+    diana3DX += 0.03 * dianaDireccion;
+    if(Math.abs(diana3DX) > 0.6) dianaDireccion *= -1;
+    
+    let dianaW = 30;
+    let dianaXReal = (W/2) + (diana3DX * (W * 0.3));
+    let dianaYReal = horizonteY + 12;
+    // --- CAPA 1: Renderizar Flechas Clavadas FALLADAS (Por detrás de la diana) ---
+    for(let i=0; i<flechas3D.length; i++) {
+        let f = flechas3D[i];
+        if(f.clavada && !f.leDioADiana) {
+            ctx.strokeStyle = "#777777"; 
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(f.xFija, f.yFija + 4); ctx.lineTo(f.xFija, f.yFija - 4); ctx.stroke();
+            ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(f.xFija, f.yFija - 4, 1.5, 0, Math.PI*2); ctx.fill();
+        }
+    }
+    
+    // --- CAPA 2: Renderizar el Elemento Móvil (Diana y sus soportes) ---
+    // Soporte de madera
+    ctx.strokeStyle = "#cd6133"; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(dianaXReal, dianaYReal); ctx.lineTo(dianaXReal - 8, dianaYReal + 20);
+    ctx.moveTo(dianaXReal, dianaYReal); ctx.lineTo(dianaXReal + 8, dianaYReal + 20);
+    ctx.stroke();
+    
+    // Círculos concéntricos de la diana
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(dianaXReal, dianaYReal, dianaW/2, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#000000"; ctx.beginPath(); ctx.arc(dianaXReal, dianaYReal, dianaW*0.35, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#1e90ff"; ctx.beginPath(); ctx.arc(dianaXReal, dianaYReal, dianaW*0.22, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#ff3b3b"; ctx.beginPath(); ctx.arc(dianaXReal, dianaYReal, dianaW*0.1, 0, Math.PI*2); ctx.fill();
+    
+    // --- CAPA 3: Renderizar Flechas Volando y Flechas Clavadas ACERTADAS (Encima de la diana) ---
+    for(let i=0; i<flechas3D.length; i++) {
+        let f = flechas3D[i];
+        
+        if(!f.clavada) {
+            f.z += 0.04; 
+            let fY = (H - 50) - f.z * (H - 50 - dianaYReal);
+            let anchoActualRango = W * (0.45 - f.z * 0.15);
+            let fX = (W/2) + (f.x * anchoActualRango);
+            let fTam = 25 * (1 - f.z * 0.85); 
+            
+            // Dibujado dinámico en el aire
+            ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 3 * (1 - f.z*0.5);
+            ctx.beginPath(); ctx.moveTo(fX, fY); ctx.lineTo(fX, fY - fTam); ctx.stroke();
+            ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(fX, fY - fTam, 3, 0, Math.PI*2); ctx.fill();
+            
+            // Calcular colisiones en Z final
+            if(f.z >= 0.96) {
+                f.clavada = true;
+                let impactoX = fX;
+                let impactoY = fY - fTam;
+                
+                let difX = impactoX - dianaXReal;
+                let difY = impactoY - dianaYReal;
+                let dist = Math.sqrt(difX * difX + difY * difY);
+                
+                if(dist <= dianaW / 2) {
+                    // ACIERTO: Se ancla relativamente al movimiento de la diana
+                    f.leDioADiana = true;
+                    f.ox = difX;
+                    f.oy = difY;
+                    
+                    let puntosGanados = 10;
+                    if (dist > dianaW*0.35) puntosGanados = 2;
+                    else if (dist > dianaW*0.22) puntosGanados = 5;
+                    else if (dist > dianaW*0.1) puntosGanados = 8;
+                    
+                    puntuacionDiana += puntosGanados;
+                    document.getElementById("scoreActualDiana").textContent = puntuacionDiana;
+                    
+                    if(puntuacionDiana > recordDiana) {
+                        recordDiana = puntuacionDiana;
+                        guardar();
+                        document.getElementById("recordActualDiana").textContent = recordDiana;
+                    }
+                } else {
+                    // FALLO: Se registra su posición absoluta de impacto en la pared/fondo
+                    f.leDioADiana = false;
+                    f.xFija = impactoX;
+                    f.yFija = impactoY;
+                }
+            }
+        } else if(f.leDioADiana) {
+            // Dibujar flechas incrustadas en el cuerpo móvil de la diana
+            let fxFinal = dianaXReal + f.ox;
+            let fyFinal = dianaYReal + f.oy;
+            ctx.strokeStyle = "#aaaaaa"; 
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(fxFinal, fyFinal + 4); ctx.lineTo(fxFinal, fyFinal - 4); ctx.stroke();
+            ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(fxFinal, fyFinal - 4, 1.5, 0, Math.PI*2); ctx.fill();
+        }
+    }
+    
+    if(flechas3D.length > 20) flechas3D.shift();
+    
+    // --- CAPA 4: Arco en primer plano ---
+    let arcoXReal = (W/2) + (jugadorDianaX * (W * 0.38));
+    ctx.save();
+    if(dianaCooldownActivo) ctx.globalAlpha = 0.4; // Feedback visual de recarga en el arco
+    ctx.strokeStyle = "#f1c40f"; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(arcoXReal, H - 10, 35, Math.PI, 0); ctx.stroke();
+    ctx.strokeStyle = "#eee"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(arcoXReal - 35, H - 10); ctx.lineTo(arcoXReal + 35, H - 10); ctx.stroke();
+    ctx.restore();
+}
+// MOTOR GRÁFICO 3D: CARRERA DE COCHES
+function bucleJuegoCoche3D(canvas, descElement) {
+    if (juegoCocheTerminado) return;
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width; const H = canvas.height;
+    const centroHorizonteY = 110;
+    ctx.clearRect(0, 0, W, H);
+    
+    ctx.fillStyle = "#a0d2eb"; ctx.fillRect(0, 0, W, centroHorizonteY);
+    ctx.fillStyle = "#27ae60"; ctx.fillRect(0, centroHorizonteY, W, H - centroHorizonteY);
+    lineaPosicion3D += 0.15;
+    
+    for (let y = centroHorizonteY; y < H; y += 4) {
+        let z = (y - centroHorizonteY) / (H - centroHorizonteY); 
+        let anchoCarretera = 40 + z * 190;
+        let centroX = W / 2;
+        let xIzq = centroX - anchoCarretera;
+        let xDer = centroX + anchoCarretera;
+        
+        ctx.fillStyle = (Math.floor(y / 15 + lineaPosicion3D) % 2 === 0) ? "#e74c3c" : "#ffffff";
+        ctx.fillRect(xIzq - 8, y, 8, 4); ctx.fillRect(xDer, y, 8, 4);
+        ctx.fillStyle = "#34495e"; ctx.fillRect(xIzq, y, xDer - xIzq, 4);
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(xIzq + 2, y, 3, 4); ctx.fillRect(xDer - 5, y, 3, 4);
+        
+        if (Math.floor(y / 20 + lineaPosicion3D) % 2 === 0) {
+            ctx.fillStyle = "#f1c40f"; ctx.fillRect(centroX - 1, y, 2, 4);
+        }
+    }
+    
+    if (Math.random() < 0.03 && enemigos3D.length < 3) {
+        let carrilX = (Math.random() - 0.5) * 1.2;
+        enemigos3D.push({ x: carrilX, z: 0, color: Math.random() > 0.5 ? "#d35400" : "#c0392b" });
+    }
+    
+    for (let i = enemigos3D.length - 1; i >= 0; i--) {
+        let e = enemigos3D[i]; e.z += 0.025;
+        let yProyectado = centroHorizonteY + e.z * (H - centroHorizonteY);
+        let anchoCarreteraActual = 40 + e.z * 190;
+        let xProyectado = (W / 2) + (e.x * anchoCarreteraActual);
+        let wObjeto = 10 + e.z * 36; let hObjeto = 8 + e.z * 32;
+        
+        if (yProyectado < H) {
+            ctx.fillStyle = "#111";
+            ctx.fillRect(xProyectado - wObjeto/2 - 2, yProyectado - hObjeto * 0.3, 4, hObjeto * 0.4);
+            ctx.fillRect(xProyectado + wObjeto/2 - 2, yProyectado - hObjeto * 0.3, 4, hObjeto * 0.4);
+            ctx.fillStyle = e.color; ctx.fillRect(xProyectado - wObjeto / 2, yProyectado - hObjeto * 0.7, wObjeto, hObjeto * 0.7);
+            ctx.fillStyle = "#2c3e50"; ctx.fillRect(xProyectado - wObjeto * 0.35, yProyectado - hObjeto, wObjeto * 0.7, hObjeto * 0.35);
+            ctx.fillStyle = "#bdc3c7"; ctx.fillRect(xProyectado - wObjeto * 0.25, yProyectado - hObjeto + 2, wObjeto * 0.5, hObjeto * 0.15);
+            ctx.fillStyle = "#ff2200"; ctx.fillRect(xProyectado - wObjeto / 2 + 1, yProyectado - hObjeto * 0.6, 4, 2); ctx.fillRect(xProyectado + wObjeto / 2 - 5, yProyectado - hObjeto * 0.6, 4, 2);
+            
+            if (e.z > 0.82 && e.z < 0.96) {
+                if (Math.abs(jugadorX3D - e.x) < 0.28) {
+                    juegoCocheTerminado = true; clearInterval(loopJuego);
+                    if (puntuacionCoche > recordCoche) {
+                        recordCoche = puntuacionCoche; guardar();
+                        descElement.innerHTML = `🏆 <b>¡NUEVO RÉCORD HISTÓRICO 3D!</b> Lograste esquivar <b>${puntuacionCoche}</b> vehículos de frente.`;
+                    } else {
+                        descElement.innerHTML = `💥 <b>¡Accidente vial!</b> Colisionaste contra otro vehículo. Tu score final fue: <b>${puntuacionCoche}</b>.`;
+                    }
+                }
+            }
+        }
+        if (e.z >= 1.0) {
+            enemigos3D.splice(i, 1); puntuacionCoche++;
+            const txtScore = document.getElementById("scoreActualCoche");
+            if (txtScore) txtScore.textContent = puntuacionCoche;
+        }
+    }
+    
+    let anchoCarreteraJugador = 40 + 0.9 * 190;
+    let jugadorXReal = (W / 2) + (jugadorX3D * anchoCarreteraJugador);
+    let jugadorYReal = H - 20;
+    let wJugador = 48; let hJugador = 40;
+    
+    ctx.fillStyle = "#0c2461"; ctx.fillRect(jugadorXReal - wJugador/2 - 4, jugadorYReal - hJugador - 4, wJugador + 8, 4);
+    ctx.fillRect(jugadorXReal - wJugador/2, jugadorYReal - hJugador, 3, 4); ctx.fillRect(jugadorXReal + wJugador/2 - 3, jugadorYReal - hJugador, 3, 4);
+    ctx.fillStyle = "#000000"; ctx.fillRect(jugadorXReal - wJugador/2 - 3, jugadorYReal - hJugador * 0.4, 4, 15); ctx.fillRect(jugadorXReal + wJugador/2 - 1, jugadorYReal - hJugador * 0.4, 4, 15);
+    ctx.fillStyle = "#1e90ff"; ctx.fillRect(jugadorXReal - wJugador/2, jugadorYReal - hJugador * 0.8, wJugador, hJugador * 0.8);
+    ctx.fillStyle = "#0a3d62"; ctx.fillRect(jugadorXReal - wJugador * 0.3, jugadorYReal - hJugador, wJugador * 0.6, hJugador * 0.3);
+    ctx.fillStyle = "#82ccdd"; ctx.fillRect(jugadorXReal - wJugador * 0.2, jugadorYReal - hJugador + 2, wJugador * 0.4, hJugador * 0.15);
+}
+function ejecutarAccionJuego() {
+    if (juegoActual === "foto") {
+        enfoqueFoto -= 2;
+        const foto = document.getElementById("fotoBorrosa");
+        if(foto) foto.style.filter = `blur(${Math.max(0, enfoqueFoto)}px)`;
+        if(enfoqueFoto <= 0) {
+            document.getElementById("descripcionJuego").innerHTML = "🌟 <b>¡Revelado exitoso!</b> Imagen nítida guardada en el historial.";
+            document.getElementById("btnPrincipalJuego").style.display = "none";
+        }
+    }
+}
+function responderTrivia(esCorrecto) {
+    const desc = document.getElementById("descripcionJuego");
+    if(esCorrecto) desc.innerHTML = "✅ <b>¡Correcto!</b> Veo que conoces perfectamente las carreteras internacionales.";
+    else desc.innerHTML = "❌ ¡Incorrecto! Vuelve a revisar tu lista de matrículas.";
+    document.getElementById("escenarioJuego").innerHTML = "";
+}
+function cerrarMinijuego() {
+    clearInterval(loopJuego);
+    juegoActual = "";
+    document.getElementById("modalJuego").classList.remove("activo");
+}
+function render(){
+    document.getElementById("lista").innerHTML = "";
+    document.getElementById("otros").innerHTML = "";
+    europa.forEach(p => crearPais(p, document.getElementById("lista"), false));
+    custom.forEach(p => crearPais(p, document.getElementById("otros"), true));
+    actualizarBarra(); actualizarPanelLogros();
+}
+function filtrar(){
+    let q = document.getElementById("buscar").value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    document.querySelectorAll(".pais").forEach(el=>{
+        const txt = el.querySelector(".pais-nombre").textContent.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+        const matchQ = txt.includes(q);
+        const esMarcado = el.classList.contains("marcado");
+        let matchP = true;
+        if (filtroPestanaActual === 'pendientes' && esMarcado) matchP = false;
+        if (filtroPestanaActual === 'completados' && !esMarcado) matchP = false;
+        el.style.display = (matchQ && matchP) ? "block" : "none";
+    });
+}
+function agregarPais(){
+    const input = document.getElementById("nuevoPais");
+    let val = input.value.trim().toLowerCase();
+    if(!val) return;
+    if(europa.includes(val) || custom.includes(val)){
+        const alerta = document.getElementById("alertaError");
+        alerta.classList.add("visible"); setTimeout(() => alerta.classList.remove("visible"), 2000);
+        input.value = ""; return;
+    }
+    custom.push(val); guardar(); render(); filtrar(); input.value = "";
+}
+document.getElementById("nuevoPais").addEventListener("keydown", function(e) { if (e.key === "Enter") agregarPais(); });
+cargarDatos();
+render();
+verificarLogros();
+</script>
+</body>
+</html>
